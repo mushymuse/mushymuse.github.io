@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="需要的文档资料微软官方WSL文档 ArchWSL官方Github ArchWiki 访问微软官方WSL文档,按照提示,打开PowerShell,执行 12dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:VirtualMachinePlatform &#x2F;all &#x2F;norestartdism.exe &#x2F;online &#x2F;enable-feature &#x2F;featu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows Sub System for Linux (Arch) 配置笔记">
+<meta property="og:url" content="http://example.com/2021/01/21/Windows%20Sub%20System%20for%20Linux%20(Arch)%20%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Mushymuse&#39;s Blog">
+<meta property="og:description" content="需要的文档资料微软官方WSL文档 ArchWSL官方Github ArchWiki 访问微软官方WSL文档,按照提示,打开PowerShell,执行 12dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:VirtualMachinePlatform &#x2F;all &#x2F;norestartdism.exe &#x2F;online &#x2F;enable-feature &#x2F;featu">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/01/21/images/AWSL%E9%85%8D%E7%BD%AE/image-20200803173256125.png">
+<meta property="og:image" content="http://example.com/2021/01/21/images/AWSL%E9%85%8D%E7%BD%AE/image-20200803173827526.png">
+<meta property="article:published_time" content="2021-01-21T13:56:28.000Z">
+<meta property="article:modified_time" content="2021-01-21T16:18:03.243Z">
+<meta property="article:author" content="Mushymuse">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/01/21/images/AWSL%E9%85%8D%E7%BD%AE/image-20200803173256125.png">
+
+<link rel="canonical" href="http://example.com/2021/01/21/Windows%20Sub%20System%20for%20Linux%20(Arch)%20%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Windows Sub System for Linux (Arch) 配置笔记 | Mushymuse's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Mushymuse's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/Windows%20Sub%20System%20for%20Linux%20(Arch)%20%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Mushymuse">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mushymuse's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Windows Sub System for Linux (Arch) 配置笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-21 21:56:28" itemprop="dateCreated datePublished" datetime="2021-01-21T21:56:28+08:00">2021-01-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-22 00:18:03" itemprop="dateModified" datetime="2021-01-22T00:18:03+08:00">2021-01-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h5 id="需要的文档资料"><a href="#需要的文档资料" class="headerlink" title="需要的文档资料"></a>需要的文档资料</h5><p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/windows/wsl/">微软官方WSL文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/yuk7/ArchWSL">ArchWSL官方Github</a></p>
+<p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/">ArchWiki</a></p>
+<p>访问<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/windows/wsl/">微软官方WSL文档</a>,按照提示,打开PowerShell,执行</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dism.exe /online /<span class="built_in">enable-feature</span> /featurename:VirtualMachinePlatform /all /norestart</span><br><span class="line">dism.exe /online /<span class="built_in">enable-feature</span> /featurename:VirtualMachinePlatform /all /norestart</span><br></pre></td></tr></table></figure>
+<p>前往<a target="_blank" rel="noopener" href="https://aka.ms/wsl2kernel">wsl2kernel下载页</a>,按提示下载安装 MSI文件。</p>
+<p>重启。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -<span class="literal">-set</span><span class="literal">-default</span><span class="literal">-version</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>访问<a target="_blank" rel="noopener" href="https://github.com/yuk7/ArchWSL">ArchWSL官方Github</a>,下载Zip包,解压到磁盘空间较大的地方。运行Arch.exe完成安装。</p>
+<p>运行<code>wsl --list --verbose</code>以查看当前已安装的WSL信息及所属WSL版本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PS C:\WINDOWS\system32&gt; wsl --list --verbose</span><br><span class="line">  NAME    STATE           VERSION</span><br><span class="line">* Arch    Stopped         2</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash</span><br></pre></td></tr></table></figure>
+<p>进入linux系统。</p>
+<p>先换源,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano /etc/pacman.d/mirrorlist</span><br></pre></td></tr></table></figure>
+<p>找到China,把地址前的注释标记#删除。</p>
+<p>在更新系统/装软件之前,先解决密钥问题。</p>
+<p>参照wiki页面<a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/Pacman-key#Resetting_all_the_keys">pacman-key#Resetting all the keys</a>,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rm /etc/pacman.d/gnupg -rf</span><br><span class="line">pacman-key --init</span><br><span class="line">pacman-key --populate archlinux</span><br></pre></td></tr></table></figure>
+<p>然后更新密钥库,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacman -Sy archlinux-keyring &amp;&amp; pacman -Su</span><br></pre></td></tr></table></figure>
+<p>然后就可以更新系统了,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacman -Syu</span><br></pre></td></tr></table></figure>
+<p>接下来设置用户。</p>
+<p>给root设置密码,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd</span><br></pre></td></tr></table></figure>
+<p>创建用户yy并设置密码,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">useradd -m -G users -s /bin/bash yy</span><br><span class="line">passwd yy</span><br></pre></td></tr></table></figure>
+<p>用visudo配置sudo,先安装vi,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pacman -S vi</span><br><span class="line">visudo</span><br></pre></td></tr></table></figure>
+<p>参考《LinuxProbe》PDF第93页,找到<code>root ALL=(ALL) ALL</code>下面一行,敲<code>i</code>键,输入<code>yy ALL=(ALL) ALL</code>,<code>ESC</code>,<code>:w</code>,回车,<code>:q</code>,回车。</p>
+<p>为了避免每次用sudo都要输密码的麻烦,可以使用<code>yy ALL=NOPASSWD: ALL</code></p>
+<p><img src="../images/AWSL%E9%85%8D%E7%BD%AE/image-20200803173256125.png"></p>
+<p><img src="../images/AWSL%E9%85%8D%E7%BD%AE/image-20200803173827526.png"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su - yy</span><br></pre></td></tr></table></figure>
+<p>切换至yy。</p>
+<p>接下来安装yay,由于makepkg需要在普通用户下操作,上述操作不可跳过。</p>
+<p>参考<a target="_blank" rel="noopener" href="https://github.com/Jguer/yay">yay-github</a>,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S git</span><br><span class="line">git <span class="built_in">clone</span> https://aur.archlinux.org/yay.git</span><br><span class="line"><span class="built_in">cd</span> yay</span><br><span class="line">makepkg -si</span><br></pre></td></tr></table></figure>
+<p>运行<code>makepkg</code>时报错,提示<code>==&gt; ERROR: Cannot find the strip binary required for object file stripping.</code></p>
+<p>参考了下面两篇博文</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e053d0ac1212">makepkg遇到问题ERROR: Cannot find the strip binary required for object file stripping.</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zsmumu/p/manjaro-wsl2.html">ArchLinux 或 Manjaro WSL2 配置记录</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S base-devel</span><br></pre></td></tr></table></figure>
+<p>出现<code>:: fakeroot is in IgnorePkg/IgnoreGroup. Install anyway? [Y/n]</code>,一直选 y,然后一直回车即可。</p>
+<p>重新运行<code>makepkg</code>,刚才的错误没了,提示<code>==&gt; ERROR: Failure while downloading https://github.com/Jguer/yay/archive/v10.0.3.tar.gz     Aborting...</code></p>
+<p>下面开始设置代理网络</p>
+<p>参考了<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/108927713">WSL2网络代理配置(apt与git)</a>和<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/677083">wsl2 怎么设置才能走 clash 的代理?</a>,打开酸酸乳,设置端口号为10808,勾上允许LAN连接。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> https_proxy=<span class="string">&quot;socks5://127.0.0.1:10808&quot;</span></span><br><span class="line">curl myip.ipip.net -v</span><br></pre></td></tr></table></figure>
+<p>得到:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">*   Trying 116.211.155.164:80...</span><br><span class="line">* Connected to myip.ipip.net (116.211.155.164) port 80 (#0)</span><br><span class="line">&gt; GET &#x2F; HTTP&#x2F;1.1</span><br><span class="line">&gt; Host: myip.ipip.net</span><br><span class="line">&gt; User-Agent: curl&#x2F;7.71.1</span><br><span class="line">&gt; Accept: *&#x2F;*</span><br><span class="line">&gt;</span><br><span class="line">* Mark bundle as not supporting multiuse</span><br><span class="line">&lt; HTTP&#x2F;1.1 200 OK</span><br><span class="line">&lt; Date: Mon, 03 Aug 2020 10:31:14 GMT</span><br><span class="line">&lt; Content-Type: text&#x2F;plain; charset&#x3D;utf-8</span><br><span class="line">&lt; Content-Length: 66</span><br><span class="line">&lt; Connection: keep-alive</span><br><span class="line">&lt; X-Via-JSL: 1cf16e4,-</span><br><span class="line">&lt; Set-Cookie: __jsluid_h&#x3D;c788899fbb19eebb70bea6ef91909824; max-age&#x3D;31536000; path&#x3D;&#x2F;; HttpOnly</span><br><span class="line">&lt; X-Cache: bypass</span><br><span class="line">&lt;</span><br><span class="line">当前 IP:36.24.12.82  来自于:中国 浙江 杭州  电信</span><br><span class="line">* Connection #0 to host myip.ipip.net left intact</span><br></pre></td></tr></table></figure>
+<p>失败了。最后参照<a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/Proxy_server">Proxy_server-ArchWiki</a>用proxychains的解决方案:</p>
+<p>先获取本机wsl虚拟网卡的ip地址,</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig</span><br></pre></td></tr></table></figure>
+<p>找到WSL:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">以太网适配器 vEthernet (WSL):</span><br><span class="line"></span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">   本地链接 IPv6 地址. . . . . . . . : fe80::5195:2b19:fcc3:e8cc%61</span><br><span class="line">   IPv4 地址 . . . . . . . . . . . . : 172.26.112.1</span><br><span class="line">   子网掩码  . . . . . . . . . . . . : 255.255.240.0</span><br><span class="line">   默认网关. . . . . . . . . . . . . :</span><br></pre></td></tr></table></figure>
+<p>回到bash,安装并配置proxychains,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pacman -S proxychains</span><br><span class="line">sudo nano /etc/proxychains.conf</span><br></pre></td></tr></table></figure>
+<p>在最后一行输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socks5 172.26.112.1 10808</span><br></pre></td></tr></table></figure>
+<p>保存退出。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains curl myip.ipip.net</span><br></pre></td></tr></table></figure>
+<p>结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[proxychains] config file found: &#x2F;etc&#x2F;proxychains.conf</span><br><span class="line">[proxychains] preloading &#x2F;usr&#x2F;lib&#x2F;libproxychains4.so</span><br><span class="line">[proxychains] DLL init: proxychains-ng 4.14</span><br><span class="line">[proxychains] Strict chain  ...  172.26.112.1:10808  ...  myip.ipip.net:80  ...  OK</span><br><span class="line">当前 IP:52.185.164.21  来自于:日本 东京都 东京  microsoft.com</span><br></pre></td></tr></table></figure>
+<p>done!</p>
+<p>然后,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/yay</span><br><span class="line">proxychains makepkg -si</span><br></pre></td></tr></table></figure>
+<p>成功安装yay。</p>
+<p>下面开始折腾图形用户界面。经过5+小时的折腾,百度参考了大量网页Blog,踩了无数坑后,终于使Xfce桌面成功显示。以下是正确配置过程。</p>
+<p>先在Windows安装VcXsrv,访问其官方<a target="_blank" rel="noopener" href="https://sourceforge.net/projects/vcxsrv/">SourceForge页面</a>以下载。</p>
+<p>安装并运行,第一页的Display Number改成0,第三页勾上Disable access control,完成。</p>
+<p>(经测,Display Number不改没关系,Disable access control必需勾上)</p>
+<p>回到linux,执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pacman -S xorg xfce4 xfce4-goodies dbus</span><br><span class="line"><span class="built_in">export</span> DISPLAY=$(awk <span class="string">&#x27;/nameserver / &#123;print $2; exit&#125;&#x27;</span> /etc/resolv.conf 2&gt;/dev/null):0</span><br><span class="line">startxfce4</span><br></pre></td></tr></table></figure>
+<p>(如果是X410,需要在其托盘图标上点击右键,勾上Allow Public Access)</p>
+<p>将上面的export命令写入<code>~/.bashrc</code>就不用每次启动都执行,</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano ~/.bashrc</span><br></pre></td></tr></table></figure>
+<p>粘贴<code>export DISPLAY=$(awk &#39;/nameserver / &#123;print $2; exit&#125;&#39; /etc/resolv.conf 2&gt;/dev/null):0</code>,保存退出。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$DISPLAY</span></span><br></pre></td></tr></table></figure>
+<p>后来发现不太需要Xfce桌面,只需要运行需要的软件。于是</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacman -Rs xfce4 xfce4-goodies</span><br></pre></td></tr></table></figure>
+<p>卸载后TeXmacs依然能正常运行。</p>
+<p>参考:</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/137618871">WSL2的图形输出配置</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42580217/article/details/105490265">wsl2图形界面的安装,wsl同理</a></p>
+<p>Tips:有问题可参考这篇Blog <a target="_blank" rel="noopener" href="https://www.oyohyee.com/post/note_arch_on_linux">在Windows下安装Arch Linux子系统</a></p>
+<hr>
+<p>8.5更新</p>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u014671962/article/details/106493368/">解决GitHub的raw.githubusercontent.com无法连接问题</a>,编辑hosts。</p>
+</li>
+<li><p>解决mysql数据库服务无法启动问题,参考<a target="_blank" rel="noopener" href="https://www.oyohyee.com/post/note_wsl2_systemd">WSL2(Arch Linux)使用systemd</a>,安装genie:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yay -S genie-systemd</span><br><span class="line">genie -s</span><br><span class="line">systemctl start xxxxx</span><br></pre></td></tr></table></figure>
+<p>更新:参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/zsmumu/p/12416159.html">https://www.cnblogs.com/zsmumu/p/12416159.html</a></p>
+</li>
+<li><p>解决yay代理无法通过proxychains问题:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S gcc-go</span><br><span class="line">yay -S yay</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/22/%E4%BA%8C%E6%AC%A1%E5%85%83%E9%9F%B3%E4%B9%90%E7%9A%84%E6%9B%B2%E5%BC%8F%E7%BB%93%E6%9E%84%E7%89%B9%E7%82%B9/" rel="next" title="二次元音乐的曲式结构特点">
+      二次元音乐的曲式结构特点 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E7%9A%84%E6%96%87%E6%A1%A3%E8%B5%84%E6%96%99"><span class="nav-number">1.</span> <span class="nav-text">需要的文档资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Mushymuse</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mushymuse</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
