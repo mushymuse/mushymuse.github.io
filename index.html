@@ -150,6 +150,116 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/Hexo%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Mushymuse">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mushymuse's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Hexo%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Hexo配置笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-03 10:34:03 / 修改时间：10:34:41" itemprop="dateCreated datePublished" datetime="2021-03-03T10:34:03+08:00">2021-03-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Hexo配置笔记"><a href="#Hexo配置笔记" class="headerlink" title="Hexo配置笔记"></a>Hexo配置笔记</h1><p>参考文档：</p>
+<p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo官方中文文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_37781304/article/details/82729029">hexo史上最全搭建教程</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d9dff0bf5da5">Hexo + GitPage 搭建个人博客</a></p>
+<p>《Github入门与实践》</p>
+<p>前面的步骤请参考官方文档“概述”和“建站”两节进行配置。</p>
+<p>更换Hexo的主题为Next，参考<a target="_blank" rel="noopener" href="https://github.com/theme-next/hexo-theme-next">官方Github页面</a>，先转到该hexo项目的根目录（本例为myblog），执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+<p>修改_config.yml文件，将<code>theme:</code>后的landscape更改为next。</p>
+<p>执行<code>hexo s</code>，打开浏览器访问相应网页，以检查是否成功。</p>
+<p>配置git：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;mushymuse&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;hzlpyy@163.com&quot;</span></span><br></pre></td></tr></table></figure>
+<p>检查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p> Github上连接已有仓库时的认证，是通过使用了SSH的公开秘钥认证方式进行的。现在让我们来创建公开秘钥认证所需的SSH Key。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;hzlpyy@163.com&quot;</span></span><br></pre></td></tr></table></figure>
+<p>一直回车以使用默认设置。</p>
+<p>获取公钥：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+<p>夹在<code>ssh-rsa</code>和邮箱之间的就是公钥，在Github的SSH Keys设置中添加这个公钥，要注意在添加时要粘贴整个文件的内容，即要包括开头的<code>ssh-rsa</code>和结尾的邮箱。</p>
+<p>测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p>出现以下提示说明成功：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi mushymuse! You&#39;ve successfully authenticated, but GitHub does not provide shell access.</span><br></pre></td></tr></table></figure>
+<p>编辑_config.yml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:mushymuse&#x2F;mushymuse.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>安装deploy-git：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>执行部署操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+<p>可用<code>hexo g</code>和<code>hexo d</code>代替<code>hexo generate</code>和<code>hexo deploy</code>。</p>
+<p>deploy过程中会验证Github的用户名和密码，输入即可。</p>
+<p>发现接下来每次deploy都要输入密码，解决方案：</p>
+<p>编辑<code>_config.yml</code>，将：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/mushymuse/mushymuse.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+<p>改为：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:mushymuse/mushymuse.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+<p>插入图片——以下方案<strong>不可行</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+<p>编辑_config.yml，将<code>post_asset_folder:</code>后改为true</p>
+<p>可行方案：</p>
+<p>方案1：</p>
+<p>参考<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/asset-folders">官方文档-资源文件夹</a></p>
+<blockquote>
+<p>最简单的方法就是将它们放在 <code>source/images</code> 文件夹中。然后通过类似于 <code>![](/images/image.jpg)</code> 的方法访问它们。</p>
+</blockquote>
+<p>在Typora中，打开偏好设置→图像→插入图片时…，修改为“复制到指定路径”，路径设置为<code>../images</code>，并勾上“优先使用相对路径”。</p>
+<p>方案2：</p>
+<p>参考<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/asset-folders#Embedding-an-image-using-markdown">https://hexo.io/zh-cn/docs/asset-folders#Embedding-an-image-using-markdown</a></p>
+<p>使用插件<code>hexo-renderer-marked</code>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/%E5%AF%92%E5%81%87%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -175,7 +285,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-03 09:29:47 / 修改时间：10:20:33" itemprop="dateCreated datePublished" datetime="2021-03-03T09:29:47+08:00">2021-03-03</time>
+              <time title="创建时间：2021-03-03 09:29:47 / 修改时间：10:30:34" itemprop="dateCreated datePublished" datetime="2021-03-03T09:29:47+08:00">2021-03-03</time>
             </span>
 
           
@@ -206,6 +316,7 @@
 <p>（小插曲：这本书撰写时当时最先进的处理器是Intel的Haswell架构的4代Core i系列，碰巧我NAS上这颗就是Haswell架构的4代i5。）</p>
 </li>
 </ul>
+<hr>
 <ul>
 <li><p>把George Winston的卡农(Variations On the Kanon By Pachelbel)练到了7分熟，比较大的进步，因为在这之前我五线谱都要数格子认233。</p>
 </li>
@@ -230,6 +341,7 @@
 </li>
 </ul>
 <p>还有一些更细碎的就不说了。</p>
+<hr>
 <p>方法论：</p>
 <ul>
 <li><p>先实现，再改进。</p>
@@ -495,7 +607,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
