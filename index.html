@@ -150,6 +150,149 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/Arch-Linux-NAS-%E8%BD%AF%E8%B7%AF%E7%94%B1-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Mushymuse">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mushymuse's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Arch-Linux-NAS-%E8%BD%AF%E8%B7%AF%E7%94%B1-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Arch Linux NAS+软路由 折腾笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-03 10:54:39 / 修改时间：10:54:47" itemprop="dateCreated datePublished" datetime="2021-03-03T10:54:39+08:00">2021-03-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>参考资料</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/Installation_guide">Arch Wiki - Installation guide</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.monlor.com/posts/41757">DIY 你自己的 Arch Linux 软路由</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wendster/p/make-your-archlinux-server-to-a-home-router.html">将你的Archlinux打造成路由器</a></p>
+<p>首先在官网下载安装盘ISO镜像，用Rufus将ISO文件烧录至U盘中。</p>
+<p>插上安装对象电脑，开机，以UEFI方式启动U盘。</p>
+<p>插上Tenda U8后发现并没有驱动适配，由于找不到驱动而卡在开机。心想难道还要拉根网线进房间？灵机一动翻出了一个以前用的旧的LB-LINK无线网卡，能成功适配驱动且开机。</p>
+<p>根据官方Wiki，使用无线网络管理工具<code>iwctl</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iwctl</span><br></pre></td></tr></table></figure>
+<p>列出所有网卡：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">device list</span><br></pre></td></tr></table></figure>
+<p>返回无线网卡列表，找到当前无线网络设备名，比如<code>wlan0</code>，然后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">station wlan0 scan</span><br><span class="line">station wlan0 get-networks</span><br></pre></td></tr></table></figure>
+<p>就能看到一张周围Wi-Fi接入点的列表了，然后连接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">station wlan0 connect 相应SSID</span><br></pre></td></tr></table></figure>
+<p>在<code>Passphrash:</code>后输入密码以连接。</p>
+<p>按Ctrl+D退出iwctl。</p>
+<p>测试网络：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com</span><br></pre></td></tr></table></figure>
+<p>打开NTP网络校时：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timedatectl set-ntp true</span><br></pre></td></tr></table></figure>
+<p>使用工具<code>cfdisk</code>，创建一个数据分区，一个ESP：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cfdisk</span><br></pre></td></tr></table></figure>
+<p>选择空闲空间，点击New，输入分区大小后回车，点击Write，输入yes，回车。</p>
+<p>ESP给100M，剩下给数据分区。</p>
+<p>检查：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsblk</span><br></pre></td></tr></table></figure>
+<p>将数据分区格式化为ext4文件系统，ESP格式化为FAT32文件系统：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkfs.ext4 &#x2F;dev&#x2F;sda1</span><br><span class="line">mkfs.fat -F32 &#x2F;dev&#x2F;sda2</span><br></pre></td></tr></table></figure>
+<p>挂载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount &#x2F;dev&#x2F;sda1 &#x2F;mnt</span><br></pre></td></tr></table></figure>
+<p>配置pacman镜像：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;pacman.d&#x2F;mirrorlist</span><br></pre></td></tr></table></figure>
+<p>将China下的某条地址用Ctrl+K，Ctrl+U移到最上面。Ctrl+X保存退出。</p>
+<p>开始下载安装系统：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacstrap &#x2F;mnt base linux linux-firmware</span><br></pre></td></tr></table></figure>
+<p>建立fstab文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">genfstab -U &#x2F;mnt &gt;&gt; &#x2F;mnt&#x2F;etc&#x2F;fstab</span><br></pre></td></tr></table></figure>
+<p>Chroot：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arch-chroot &#x2F;mnt</span><br></pre></td></tr></table></figure>
+<p>设置时区：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timedatectl set-timezone Asia&#x2F;Shanghai</span><br></pre></td></tr></table></figure>
+<p>将时间写入主板硬件时钟：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hwclock --systohc</span><br></pre></td></tr></table></figure>
+<p>设置hostname：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;hostname</span><br><span class="line">nano &#x2F;etc&#x2F;hosts</span><br></pre></td></tr></table></figure>
+<p>设置root密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd</span><br></pre></td></tr></table></figure>
+<p>设置语言/字符集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;locale&#x2F;gen</span><br><span class="line">locale-gen</span><br><span class="line">nano &#x2F;etc&#x2F;locale.conf</span><br></pre></td></tr></table></figure>
+<p>接下来开始安装Grub：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacman -S grub</span><br></pre></td></tr></table></figure>
+<p>挂载ESP：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;esp</span><br><span class="line">mount &#x2F;dev&#x2F;sda2 &#x2F;esp</span><br><span class="line">mkdir &#x2F;esp&#x2F;EFI</span><br></pre></td></tr></table></figure>
+<p>安装grub：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pacman -S frub efibootmgr</span><br><span class="line">grub-install --target&#x3D;x86_64-efi --efi-directory&#x3D;esp --bootloader-id&#x3D;GRUB</span><br><span class="line">grub-mkconfig -o &#x2F;boot&#x2F;grub&#x2F;grub.cfg</span><br></pre></td></tr></table></figure>
+<p>重启：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reboot</span><br></pre></td></tr></table></figure>
+<p>接下来使用工具netctl配置以dhcp的方式连接外部以太网：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp &#x2F;etc&#x2F;netctl&#x2F;examples&#x2F;ethernet-dhcp &#x2F;etc&#x2F;netctl&#x2F;</span><br></pre></td></tr></table></figure>
+<p>列出所有网卡：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip link</span><br></pre></td></tr></table></figure>
+<p>找到连接外网要用的网卡，比如我的板载百兆网口的名字是<code>enp3s0</code> 编辑配置文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;netctl&#x2F;ethernet-dhcp</span><br></pre></td></tr></table></figure>
+<p>将<code>Interface=</code>后面改成自己网卡的名字：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Interface&#x3D;enp3s0</span><br></pre></td></tr></table></figure>
+<p>保存退出，然后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netctl start ethernet-dhcp</span><br></pre></td></tr></table></figure>
+<p>如果没有报错，那大概率现在就能上网了，测试一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com</span><br></pre></td></tr></table></figure>
+<p>接下来的步骤是配置sudo和安装yay，和WSL配置的步骤重合，<a target="_blank" rel="noopener" href="https://mushymuse.gitee.io/AWSL%E9%85%8D%E7%BD%AE/">详见这篇笔记</a>，不再赘述。</p>
+<p>2月27日更新：</p>
+<p>接下来首先解决当务之急的NAS：</p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/Samba">Archwiki-Samba</a></p>
+<p><a target="_blank" rel="noopener" href="https://git.samba.org/samba.git/?p=samba.git;a=blob_plain;f=examples/smb.conf.default;hb=HEAD">A documented example from the Samba git repository</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.samba.org/samba/docs/Samba-HOWTO-Collection.pdf">Samba-HOWTO-Collection.pdf</a></p>
+<p>先尝试一下最简单的，编辑<code>/etc/samba/amb.conf</code>为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">    map to guest &#x3D; Bad User</span><br><span class="line">[public]</span><br><span class="line">    path &#x3D; &#x2F;</span><br><span class="line">    public &#x3D; yes</span><br><span class="line">    writable &#x3D; yes</span><br><span class="line">    only guest &#x3D; yes</span><br></pre></td></tr></table></figure>
+<p>使用ifconfig查看本机ip（没有的话先安装）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+<p>在一台Windows电脑的资源管理器地址栏里输入<code>\\</code>加上上面查到的ip地址，即访问搭好的SMB服务器。</p>
+<p>测试拷贝传输文件：</p>
+<p><img src="file://C:/Users/Admin/Documents/images/Arch%20Linux%20NAS+%E8%BD%AF%E8%B7%AF%E7%94%B1%20%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/image-20210303104650590.png?lastModify=1614739974" alt="image-20210303104650590"></p>
+<p>待更。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/Hexo%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -175,7 +318,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-03 10:34:03 / 修改时间：10:34:41" itemprop="dateCreated datePublished" datetime="2021-03-03T10:34:03+08:00">2021-03-03</time>
+              <time title="创建时间：2021-03-03 10:34:03 / 修改时间：10:35:08" itemprop="dateCreated datePublished" datetime="2021-03-03T10:34:03+08:00">2021-03-03</time>
             </span>
 
           
@@ -285,7 +428,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-03 09:29:47 / 修改时间：10:30:34" itemprop="dateCreated datePublished" datetime="2021-03-03T09:29:47+08:00">2021-03-03</time>
+              <time title="创建时间：2021-03-03 09:29:47 / 修改时间：10:49:04" itemprop="dateCreated datePublished" datetime="2021-03-03T09:29:47+08:00">2021-03-03</time>
             </span>
 
           
@@ -302,12 +445,15 @@
           <p>我不是一个执着和专注的人，所以寒假也没有什么系统性的成就，只有一些零碎的：</p>
 <ul>
 <li><p>在虾米音乐关闭之际，尝试使用Python的Requests库用正则匹配的办法爬取了虾米上的M3和例大祭这两个同人展的所有届的专辑存入MySQL中（Comic Market来不及爬了），顺便熟悉了VS Code。</p>
+<img src="../images/寒假总结/2021-03-02 17-35-20.png" alt="2021-03-02 17-35-20" style="zoom:60%;" />
+
+<img src="../images/寒假总结/2021-03-02 17-23-00.png" alt="2021-03-02 17-23-00" style="zoom:60%;" />
 </li>
 <li><p>给外公装了台电脑，花了挺多时间，比我想象中的要费点劲。</p>
 </li>
-<li><p>由于闲置了很多硬盘，趁刚装过机的劲，尝试用旧电脑主板+阵列(HBA)卡+多口/多个千兆网卡，搭一个基于Arch Linux的软路由+NAS一体机，现在已经初步配置好 Samba Server，配合一台WIFI 6(802.11 ax)路由，笔记本无线局域网访问能跑满机械硬盘(100MB/s左右)的速度，基本实现NAS功能。接下来软路由的部分涉及iptables的配置，短期还未必能搞得明白，任重而道远</p>
+<li><p>由于闲置了很多硬盘，趁刚装过机的劲，尝试用旧电脑主板+阵列(HBA)卡+多口/多个千兆网卡，搭一个基于Arch Linux的软路由+NAS一体机，现在已经初步配置好 Samba Server，配合一台WIFI 6(802.11 ax)路由，笔记本无线局域网访问能跑满机械硬盘(100MB/s左右)的速度，基本实现NAS功能。接下来软路由的部分涉及iptables的配置，短期还未必能搞得明白，任重而道远。</p>
 </li>
-<li><p>终于基本把基于Gitpage + Hexo的博客折腾完了，还打算绑上购买的域名<code>musymuse.site</code>，但是出现了很多问题，并不是很顺利，所以干脆先用原来的域名<code>mushymuse.github.io</code>算了。</p>
+<li><p>终于基本把基于Gitpage + Hexo的博客折腾完了，还打算绑上购买的域名<code>musymuse.site</code>，但是出现了很多问题，并不是很顺利，所以干脆先用原来的域名<code>mushymuse.github.io</code>算了，<a target="_blank" rel="noopener" href="https://mushymuse.gitee.io/Hexo%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/">详见这篇配置笔记</a>。</p>
 <ul>
 <li>2021年3月3日更新：不知为何<code>mushymuse.github.io</code>挂了，现在还没搞清楚为什么域名没有配置好，先用github的替代品gitee，况且gitee有更快的国内访问速度。</li>
 </ul>
@@ -320,7 +466,7 @@
 <ul>
 <li><p>把George Winston的卡农(Variations On the Kanon By Pachelbel)练到了7分熟，比较大的进步，因为在这之前我五线谱都要数格子认233。</p>
 </li>
-<li><p>扒了ふわふわ時間（TV动画《轻音少女》插曲）的Tonewheel Organ（电风琴）部分，详见<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ch411Q7Sh">视频</a>。</p>
+<li><p>扒了ふわふわ時間（TV动画《轻音少女》插曲）的Tonewheel Organ（电风琴）部分，<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ch411Q7Sh">详见这个视频</a>。</p>
 </li>
 <li><p>扒了《夜空》（TV动画《恋爱小行星》OP）的主歌部分。</p>
 <p>（小插曲：一开始懒得去找音源，于是就用Live内置音色+合成器Serum，就比如没有弦乐就用锯齿波假装是弦乐233。后来还是去下载了，但是下载下来的哪些音源动辄几十GB，我的笔记本上512GB的SSD已经不够用了，于是就想快点把NAS折腾好以腾出笔记本的空间XD。）</p>
@@ -607,7 +753,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
