@@ -150,6 +150,93 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%B0%8F%E7%B1%B39SE%20%E5%88%B7%E5%85%A5Magisk%20root%20%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Mushymuse">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mushymuse's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%B0%8F%E7%B1%B39SE%20%E5%88%B7%E5%85%A5Magisk%20root%20%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-06 23:32:25" itemprop="dateCreated datePublished" datetime="2021-03-06T23:32:25+08:00">2021-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-07 01:39:59" itemprop="dateModified" datetime="2021-03-07T01:39:59+08:00">2021-03-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>之前手机为荣耀10不开放BL解锁所以没有什么刷机经验，以下为踩坑记录。</p>
+<p><strong>参考：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.coolapk.com/feed/13492146?shareKey=OTFkMjlkOTdlNzJlNjA0M2FhNzM~&shareUid=1103859&shareFrom=com.coolapk.market_10.3.1">酷友@谦喔的帖子</a></p>
+<p><a target="_blank" rel="noopener" href="https://forum.xda-developers.com/mi-9-se/development/recovery-unofficial-twrp-3-3-1-0-t3935470">XDA关于9SE刷入TWRP的帖子</a></p>
+<p><a target="_blank" rel="noopener" href="https://unofficialtwrp.com/twrp-3-4-0-for-xiaomi-mi9-se-grus/">https://unofficialtwrp.com/twrp-3-4-0-for-xiaomi-mi9-se-grus/</a></p>
+<p>首先备份所有数据，因为<strong>解锁会清除所有用户数据</strong>。</p>
+<p>进入设置&gt;更多设置&gt;开发者模式&gt;设备解锁状态。</p>
+<p>（若未开启开发者模式，需要进入设置&gt;我的设备&gt;全部参数，连续点击MIUI版本开启）</p>
+<p>按提示打开小米账号所绑手机号的SIM卡的数据开关，点击<code>绑定账号和设备</code>。</p>
+<p>访问<a target="_blank" rel="noopener" href="https://www.miui.com/unlock/download.html">官方解锁工具下载页面</a>下载解锁工具。</p>
+<p>关机，长按音量下键和电源键进入fastboot。</p>
+<p>打开官方解锁工具，点击右上角的小齿轮进入设置，点击<code>驱动检测</code>以安装驱动。</p>
+<p>安装好驱动后，如果手机已进入fastboot且和电脑以USB数据线相连接，工具就会检测到手机并提示“已连接手机”。</p>
+<p>在解锁工具登录小米账号，在确认无误后点击<code>解锁</code>&gt;<code>确认解锁</code>。</p>
+<p>接下来刷入第三方Rec——TWRP。</p>
+<p>访问<a target="_blank" rel="noopener" href="http://bigota.d.miui.com/tools/MiFlash2018-5-28-0.zip">Miflash官方下载地址</a>下载Miflash，解压并运行，按提示安装好驱动。</p>
+<p>接下来要下载vbmeta.img，基于<a target="_blank" rel="noopener" href="https://forum.xda-developers.com/mi-9-se/development/recovery-unofficial-twrp-3-3-1-0-t3935470">XDA的帖子</a>中下载vbmeta.img的网盘kudnet.id似乎挂了，Google了一下，<a target="_blank" rel="noopener" href="https://unofficialtwrp.com/twrp-3-4-0-for-xiaomi-mi9-se-grus/">在此</a>可以下载到。</p>
+<p>访问<a target="_blank" rel="noopener" href="https://dl.twrp.me/grus/">TWRP for grus官方页面</a>下载适用于小米9SE的TWRP。</p>
+<p>访问<a target="_blank" rel="noopener" href="https://developer.android.com/studio/releases/platform-tools">SDK Platform Tools官方页面</a>下载SDK Platform Tools，解压。</p>
+<p>使用SDK Platform Tools中的fastboot执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fastboot --disable-verity --disable-verification flash vbmeta vbmeta.img</span><br><span class="line">fastboot flash recovery twrp-xxxx-grus.img</span><br></pre></td></tr></table></figure>
+<p>完成后马上长按音量上键和电源键进入Rec，成功进入TWRP说明刷入成功。</p>
+<p>待更。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/Arch-Linux-NAS-%E8%BD%AF%E8%B7%AF%E7%94%B1-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -759,7 +846,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
